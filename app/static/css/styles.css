@@ -1,0 +1,8 @@
+
+
+
+
+.table-container {
+    max-height: 450px; /* Defina a altura fixa desejada */
+    overflow-y: auto; /* Habilita o scroll vertical quando necessário */
+  }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Nunito:wght@300&family=Pacifico&family=Rajdhani:wght@500&display=swap');
+
+        .book {
+            padding: 40px;
+            text-align: center;
+            color: aliceblue;
+            /* font-family: 'Nunito', sans-serif; */
+            /* font-family: 'Dancing Script', cursive; */
+            /* font-family: 'Pacifico', cursive; */
+            font-family: 'Rajdhani', sans-serif;
+
+            font-size: 200%;
+            width: 150px;
+            height: 250px;
+            background-color: #8B4513;
+            border-radius: 5px;
+            border: solid 1px black;
+            box-shadow: 7px 10px #f47c27;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="book text-center">
+        <span class="text_title">Titulo do Livro</span>
+    </div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+	{
+	"imports": {
+		"three": "https://unpkg.com/three@<version>/build/three.module.js",
+		"three/addons/": "https://unpkg.com/three@<version>/examples/jsm/"
+	}
+	}
+</script>
+
+    <script type="module">
+
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+
+    </script>
+</body>

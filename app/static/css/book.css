@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Nunito:wght@300&family=Pacifico&family=Rajdhani:wght@500&display=swap');
+
+/* estrutura */
+.book {
+    padding: 40px;
+    text-align: center;
+    font-size: 200%;
+    width: 150px;
+    height: 200px;
+    border-radius: 5px;
+}
+
+/* temas  */
+
+.book-brown {
+    background-color: #8B4513;
+    box-shadow: 7px 10px #f47c27;
+    color: aliceblue;
+}
+
+.book-blue-dark {
+    background-color: #132d8b47;
+    box-shadow: 7px 10px #4264ffd6;
+    color: aliceblue;
+}
+
+.book-navy-blue {
+    background-color: #132d8b;
+    box-shadow: 7px 10px #4264ffd6;
+    color: aliceblue;
+}
+
+.book-purple {
+    background-color: #68138b;
+    box-shadow: 7px 10px #b642ffd6;
+    color: aliceblue;
+}
+
+.book-purple-dark {
+    background-color: #68138b70;
+    box-shadow: 7px 10px #b642ffd6;
+    color: aliceblue;
+}
+
+.book-cola {
+    background-color: #842020;
+    box-shadow: 7px 10px #ff4242d6;
+    color: aliceblue;
+}
+
+.book-yelow {
+    background-color: #e0d800;
+    box-shadow: 7px 10px #fff342a1;
+    color: aliceblue;
+}
+
+.book-green {
+    background-color: #069a00;
+    box-shadow: 7px 10px #187f19b5;
+    color: aliceblue;
+}
+
+/* fontes  */
+.book-text-rajd{
+    font-family: 'Rajdhani', sans-serif;
+}
+.book-text-dacing{
+    font-family: 'Dancing Script', cursive;
+}
+.book-text-nunito{
+    font-family: 'Nunito', sans-serif;
+}
+.book-text-pacific{
+    font-family: 'Pacifico', cursive;
+}
