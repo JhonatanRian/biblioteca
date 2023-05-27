@@ -65,29 +65,27 @@ $EmprestimosConnection = new Emprestimos();
                 <div class="card text-center">
                     <div class="card-title">
                         <h5>
-                            Livros alugados
+                            Alugueis
                         </h5>
                     </div>
                     <div class="table-container">
                         <table class="table table-primary table-striped">
                             <thead>
                                 <tr>
-                                    <th scope="col">livro</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Data de Aluguel</th>
+                                    <th scope="col">Nome do Aluno</th>
                                     <th scope="col">Telefone</th>
-                                    <!-- <th scope="col">St</th> -->
+                                    <th scope="col">Quantidade de livros</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $consultaEmprestimos = $EmprestimosConnection->GetInfoEmprestimos(0, 0, 0);
+                                $consultaEmprestimos = $EmprestimosConnection->GetInfoEmprestimos(0, 4);
                                 if (!empty($consultaEmprestimos)) {
                                     foreach ($consultaEmprestimos as $emprestimos) {
                                         echo "<tr>";
-                                        echo "<th scope='row'>" . $emprestimos["nomelivro"] . "</th>";
-                                        echo "<td>" . $emprestimos["nomealuno"] . "</td>";
-                                        echo "<td>" . $emprestimos["dataemprestimo"] . "</td>";
+                                        echo "<th scope='row'>" . $emprestimos["nomealuno"] . "</th>";
+                                        echo "<td>" . $emprestimos["telefone"] . "</td>";
+                                        echo "<td>" . $emprestimos["qtde"] . "</td>";
                                         // echo $emprestimos["ordememprestimos"] . "<br>";
                                         // echo $emprestimos["idlivro"] . "<br>";
                                         // echo $emprestimos["idoperador"] . "<br>";
@@ -137,13 +135,15 @@ $EmprestimosConnection = new Emprestimos();
                             if ($n){
                                 $consultaAlunos = $AlunosConnection->GetInfoAlunos($n, 1);
                                 if (!empty($consultaAlunos)) {
-                                    echo "<ul>";
+                                    echo "<ul class='list-group list-group-flush' >";
 
                                     foreach ($consultaAlunos as $alunos) {
 
                                         // echo $alunos["idaluno"] . "<br>";
                                         
-                                        echo "<li>".$alunos["nomealuno"]." - ".$alunos["cpfaluno"]."</li>";
+                                        echo "<a href='../alugar' class='list-group-item list-group-item-action' >";
+                                        echo $alunos["nomealuno"]." - ".$alunos["cpfaluno"];
+                                        echo "</a>";
                                         // echo $alunos["datacadastro"] . "<br>";
                                         // echo $alunos["exaluno"] . "<br>";
                                         // echo $alunos["curso"] . "<br>";

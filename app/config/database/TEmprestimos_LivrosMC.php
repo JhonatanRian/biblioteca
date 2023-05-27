@@ -41,14 +41,13 @@ class Emprestimos {
 		else if ($prTipoConsulta == 3) {
 			$filtro = " WHERE IDOPERADOR = $prInfoConsulta";
 		}
-		
+
 		if ($prTipoConsulta == 4) {
 			$sqlConsAux = " SELECT EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
 						  " FROM TEMPRESTIMOS_LIVROS EMP ".
-						  " LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ".
-						  " LEFT OUTER JOIN tlivros LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
-						  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR) ".
-						  " GROUP BY EMP.IDALUNO, EMP.NOMEALUNO, AL.TELEFONE ";
+						  " LEFT OUTER JOIN TALUNOS AL ON (EMP.IDALUNO = AL.IDALUNO) ".
+						  " GROUP BY EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE ".
+						  " ORDER BY QTDE DESC ";
 
 		} else {
 			$sqlConsAux = " SELECT EMP.*, AL.NOMEALUNO, LI.NOMELIVRO, CASE WHEN ((EMP.DATADADEVOLUCAO IS NULL) OR (EMP.DATAPREVISTADEVOLUCAO < EMP.DATADADEVOLUCAO)) THEN DATEDIFF(NOW(), DATAPREVISTADEVOLUCAO) ELSE 0 END AS DIASATRASADO ".
@@ -74,20 +73,22 @@ class Emprestimos {
 					"telefone"              => $row["TELEFONE"],
 					"qtde"                  => $row["QTDE"]
 					);
-				}		
-				$retornoConsulta[] = array( 
-					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
-					"idaluno"               => $row["IDALUNO"],
-					"nomealuno"             => $row["NOMEALUNO"],
-					"idlivro"               => $row["IDLIVRO"],
-					"nomelivro"             => $row["NOMELIVRO"],
-					"idoperador"            => $row["IDOPERADOR"],
-					"dataemprestimo"        => $row["DATAEMPRESTIMO"],
-					"dataprevistadevolucao" => $row["DATAPREVISTADEVOLUCAO"],
-					"datadadevolucao"       => $row["DATADADEVOLUCAO"],
-					"diasatrasado"          => $DiasAtrasado,
-					"valordamulta"          => $ValorDaMulta						
-				);
+				}
+				else {
+					$retornoConsulta[] = array( 
+						"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
+						"idaluno"               => $row["IDALUNO"],
+						"nomealuno"             => $row["NOMEALUNO"],
+						"idlivro"               => $row["IDLIVRO"],
+						"nomelivro"             => $row["NOMELIVRO"],
+						"idoperador"            => $row["IDOPERADOR"],
+						"dataemprestimo"        => $row["DATAEMPRESTIMO"],
+						"dataprevistadevolucao" => $row["DATAPREVISTADEVOLUCAO"],
+						"datadadevolucao"       => $row["DATADADEVOLUCAO"],
+						"diasatrasado"          => $DiasAtrasado,
+						"valordamulta"          => $ValorDaMulta						
+					);
+				}
 				
 			}
 			return $retornoConsulta;
