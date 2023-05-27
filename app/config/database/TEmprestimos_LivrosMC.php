@@ -114,7 +114,7 @@ class Emprestimos {
 				
 				return "Registro atualizado com sucesso!";
 			} else {
-				return "Livro não encontrado para atualização!";
+				return "Informçãos do emprestimo de livro não encontrado para atualização!";
 			}
 				
 		} else {
