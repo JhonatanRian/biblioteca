@@ -1,9 +1,9 @@
 <?php
 /*
-******************************************************************************************************************
+**************************************
 Solicitação		Programador   	Data        Alteração
 000001			Nathan.Faria	16/05/2023	Criado funções de manipulação da tabela TEMPRESTIMOS_LIVROS.	  
-******************************************************************************************************************
+**************************************
 */
 
 require_once 'ModuloConnection.php';
@@ -46,41 +46,42 @@ class Emprestimos {
 			$filtro = " WHERE IDOPERADOR = $prInfoConsulta";
 		}
 		
-		if (($prConsultaDetalhada == 0) and ($ConsultaGeral == false)) {
+		if (($prConsultaDetalhada == 0) and ($ConsultaGeral == true)) {
 			$sqlConsAux = "SELECT * FROM TEMPRESTIMOS_LIVROS";
 		} else {
-			$sqlConsAux = " SELECT EMP.*, CASE WHEN ((EMP.DATADADEVOLUCAO IS NULL) OR (EMP.DATAPREVISTADEVOLUCAO < EMP.DATADADEVOLUCAO)) THEN DATEDIFF(NOW(), DATAPREVISTADEVOLUCAO) ELSE 0 END AS DIASATRASADO ".
-			              " FROM temprestimos_livros EMP LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ". 
+			$sqlConsAux = " SELECT EMP.*, AL.NOMEALUNO, LI.NOMELIVRO, CASE WHEN ((EMP.DATADADEVOLUCAO IS NULL) OR (EMP.DATAPREVISTADEVOLUCAO < EMP.DATADADEVOLUCAO)) THEN DATEDIFF(NOW(), DATAPREVISTADEVOLUCAO) ELSE 0 END AS DIASATRASADO ".
+			              " FROM temprestimos_livros EMP ".
+						  " LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ". 
 						  " LEFT OUTER JOIN tlivros LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
 		                  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR)";
 		}
-		
-		if ($prTipoConsulta == 0) {
-            $sql = $sqlConsAux.$filtro;
-            $resultadoSqlCons = $this->connection->query($sql);
-            if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
-                while($row = $resultadoSqlCons->fetch_assoc()){
-					if (($prConsultaDetalhada == 1) or ($ConsultaGeral == true)) {
-							$DiasAtrasado = $row["DIASATRASADO"];							
-							$ValorDaMulta = 0;
-							$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
-						}
-						
-					$retornoConsulta[] = array( 
-						"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
-						"idaluno"               => $row["IDALUNO"],
-						"idlivro"               => $row["IDLIVRO"],
-						"idoperador"            => $row["IDOPERADOR"],
-						"dataemprestimo"        => $row["DATAEMPRESTIMO"],
-						"dataprevistadevolucao" => $row["DATAPREVISTADEVOLUCAO"],
-						"datadadevolucao"       => $row["DATADADEVOLUCAO"],
-						"diasatrasado"          => $DiasAtrasado,
-						"valordamulta"          => $ValorDaMulta						
-					);
-                }
-				return $retornoConsulta;
-            }            
-        }
+	
+		$sql = $sqlConsAux.$filtro;
+		$resultadoSqlCons = $this->connection->query($sql);
+		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
+			while($row = $resultadoSqlCons->fetch_assoc()){
+				if (($prConsultaDetalhada == 1) or ($ConsultaGeral == true)) {
+						$DiasAtrasado = $row["DIASATRASADO"];							
+						$ValorDaMulta = 0;
+						$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
+					}
+					
+				$retornoConsulta[] = array( 
+					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
+					"idaluno"               => $row["IDALUNO"],
+					"nomealuno"             => $row["NOMEALUNO"],
+					"idlivro"               => $row["IDLIVRO"],
+					"nomelivro"             => $row["NOMELIVRO"],
+					"idoperador"            => $row["IDOPERADOR"],
+					"dataemprestimo"        => $row["DATAEMPRESTIMO"],
+					"dataprevistadevolucao" => $row["DATAPREVISTADEVOLUCAO"],
+					"datadadevolucao"       => $row["DATADADEVOLUCAO"],
+					"diasatrasado"          => $DiasAtrasado,
+					"valordamulta"          => $ValorDaMulta						
+				);
+			}
+			return $retornoConsulta;
+		}            
     }
 	
 	public function InsertEhUpdateEmprestimos($prOrdemEmprestimos, $prIdAluno, $prIdLivro, $prIdOperador, 

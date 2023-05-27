@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="pt-br">
 
+<?php
+require '../config/database/TAlunosMC.php';
+require '../config/database/TEmprestimos_LivrosMC.php';
+$AlunosConnection      = new Alunos();
+$EmprestimosConnection = new Emprestimos();
+?>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,84 +80,34 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <?php
+                                $consultaEmprestimos = $EmprestimosConnection->GetInfoEmprestimos(0, 0, 0);
+                                if (!empty($consultaEmprestimos)) {
+                                    foreach ($consultaEmprestimos as $emprestimos) {
+                                        echo "<tr>";
+                                        echo "<th scope='row'>" . $emprestimos["nomelivro"] . "</th>";
+                                        echo "<td>" . $emprestimos["nomealuno"] . "</td>";
+                                        echo "<td>" . $emprestimos["dataemprestimo"] . "</td>";
+                                        // echo $emprestimos["ordememprestimos"] . "<br>";
+                                        // echo $emprestimos["idlivro"] . "<br>";
+                                        // echo $emprestimos["idoperador"] . "<br>";
+                                        // echo $emprestimos["dataemprestimo"] . "<br>";
+                                        // echo $emprestimos["dataprevistadevolucao"] . "<br>";
+                                        // echo $emprestimos["datadadevolucao"] . "<br>";
+                                        // echo $emprestimos["valordamulta"] . "<br>";
+                                        // echo $emprestimos["diasatrasado"] . "<br>";
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<td col=4 > Nenhum resultado encontrado. </td>";
+                                }
+                                ?>
+                                <!-- <tr>
                                     <th scope="row">estatistica</th>
                                     <td>Mark</td>
                                     <td>13/01/2023</td>
                                     <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Religião</th>
-                                    <td>Fernanda</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Culinaria</th>
-                                    <td>Marcos</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -164,17 +121,47 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form class="row g-3" action="../functions/buscar-alunos.php" method="GET">
+                        <form class="row g-3" action="./" method="GET">
                             <div class="col-auto">
                                 <label for="staticEmail2" class="visually-hidden">Email</label>
-                                <input class="form-control" placeholder="busca aluno...">
+                                <input name="name_aluno" class="form-control" placeholder="busca aluno...">
                             </div>
                             <div class="col-auto">
                                 <button type="submit" class="btn btn-primary mb-3">buscar</button>
                             </div>
                         </form>
+                        <?php
+                        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+                            $n = $_GET["name_aluno"];
+
+                            if ($n){
+                                $consultaAlunos = $AlunosConnection->GetInfoAlunos($n, 1);
+                                if (!empty($consultaAlunos)) {
+                                    echo "<ul>";
+
+                                    foreach ($consultaAlunos as $alunos) {
+
+                                        // echo $alunos["idaluno"] . "<br>";
+                                        
+                                        echo "<li>".$alunos["nomealuno"]." - ".$alunos["cpfaluno"]."</li>";
+                                        // echo $alunos["datacadastro"] . "<br>";
+                                        // echo $alunos["exaluno"] . "<br>";
+                                        // echo $alunos["curso"] . "<br>";
+                                        // echo $alunos["turma"] . "<br>";
+                                        // echo $alunos["telefone"] . "<br>";
+                                        // echo $alunos["cadastroativo"] . "<br>";
+
+                                    }
+                                    echo "</ul>";
+
+                                } else {
+                                    echo "Nenhum resultado encontrado.";
+                                }
+                            }
+                        }
+                        ?>
                         <ul class="dropdown-menu">
-                            <li><span class="dropdown-item-text">Dropdown item text</span></li>
+
                             <li><a class="dropdown-item" href="#">Action</a></li>
                             <li><a class="dropdown-item" href="#">Another action</a></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>

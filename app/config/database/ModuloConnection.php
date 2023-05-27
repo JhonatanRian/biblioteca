@@ -6,13 +6,13 @@ Solicitação		Programador   	Data        Alteração
 ******************************************************************************************************************
 */
 	
-	$servername = "localhost";
+	$servername = "db";
 	$username = "root";
-	$password = "";
+	$password = "root";
 	$basename = "sdbbiblio";
 
 	// Cria conexao com a base - Para ser chamado em outros fontes...
-	$connection = new mysqli($servername, $username, $password, $basename);
+	$connection = new MySQLi($servername, $username, $password, $basename);
 	
 	if ($connection->connect_error) {
 		die("Erro de conexão com o banco: $Erro -> " . $connection->connect_error);
