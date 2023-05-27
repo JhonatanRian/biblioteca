@@ -67,11 +67,13 @@ class Emprestimos {
 				$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
 				
 				if ($prTipoConsulta == 4) {
+					$retornoConsulta[] = array( 
 					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
 					"idaluno"               => $row["IDALUNO"],
 					"nomealuno"             => $row["NOMEALUNO"],					
 					"telefone"              => $row["TELEFONE"],
 					"qtde"                  => $row["QTDE"]
+					);
 				}		
 				$retornoConsulta[] = array( 
 					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
