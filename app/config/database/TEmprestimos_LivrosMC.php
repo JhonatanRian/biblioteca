@@ -2,7 +2,8 @@
 /*
 **************************************
 Solicitação		Programador   	Data        Alteração
-000001			Nathan.Faria	16/05/2023	Criado funções de manipulação da tabela TEMPRESTIMOS_LIVROS.	  
+000001			Nathan.Faria	16/05/2023	Criado funções de manipulação da tabela TEMPRESTIMOS_LIVROS.
+000002          Nathan.Faria    26/05/2023  Removido filtro de consulta detalhada, criada consulta especifica para painel secretária.	  
 **************************************
 */
 
@@ -22,50 +23,56 @@ class Emprestimos {
 		//}
     }
 
-    public function GetInfoEmprestimos($prInfoConsulta, $prTipoConsulta, $prConsultaDetalhada) {        
+    public function GetInfoEmprestimos($prInfoConsulta, $prTipoConsulta) {        
 		$retornoConsulta = array();
 		$filtro          = "";
-		$ConsultaGeral   = false;
 		$ValorDeMultaConstante = 2;
 		
-		if (($prInfoConsulta == 0) and ($prTipoConsulta == 0) and ($prConsultaDetalhada == 0)){
-			$ConsultaGeral   = true;
-		}
-		
 		// Consulta por Ordem de Emprestimo
-		if (($prTipoConsulta == 0) and ($ConsultaGeral == false)) {
+		if ($prTipoConsulta == 0) {
 			$filtro = " WHERE ORDEMEMPRESTIMOS = $prInfoConsulta";
 		}// Consulta por ID do Aluno 
-		else if (($prTipoConsulta == 1) and ($ConsultaGeral == false)){
+		else if ($prTipoConsulta == 1){
 			$filtro = " WHERE IDALUNO = $prInfoConsulta";
 		}// Consulta por ID do Livro 
-		else if (($prTipoConsulta == 2) and ($ConsultaGeral == false)) {
+		else if ($prTipoConsulta == 2) {
 			$filtro = " WHERE IDLIVRO = $prInfoConsulta";
 		}// Consulta por ID do Operador 
-		else if (($prTipoConsulta == 3) and ($ConsultaGeral == false)) {
+		else if ($prTipoConsulta == 3) {
 			$filtro = " WHERE IDOPERADOR = $prInfoConsulta";
 		}
 		
-		if (($prConsultaDetalhada == 0) and ($ConsultaGeral == true)) {
-			$sqlConsAux = "SELECT * FROM TEMPRESTIMOS_LIVROS";
+		if ($prTipoConsulta == 4) {
+			$sqlConsAux = " SELECT EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
+						  " FROM TEMPRESTIMOS_LIVROS EMP ".
+						  " LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ".
+						  " LEFT OUTER JOIN tlivros LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
+						  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR) ".
+						  " GROUP BY EMP.IDALUNO, EMP.NOMEALUNO, AL.TELEFONE ";
+
 		} else {
 			$sqlConsAux = " SELECT EMP.*, AL.NOMEALUNO, LI.NOMELIVRO, CASE WHEN ((EMP.DATADADEVOLUCAO IS NULL) OR (EMP.DATAPREVISTADEVOLUCAO < EMP.DATADADEVOLUCAO)) THEN DATEDIFF(NOW(), DATAPREVISTADEVOLUCAO) ELSE 0 END AS DIASATRASADO ".
-			              " FROM temprestimos_livros EMP ".
+						  " FROM temprestimos_livros EMP ".
 						  " LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ". 
 						  " LEFT OUTER JOIN tlivros LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
-		                  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR)";
+						  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR)";
 		}
 	
 		$sql = $sqlConsAux.$filtro;
 		$resultadoSqlCons = $this->connection->query($sql);
 		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
 			while($row = $resultadoSqlCons->fetch_assoc()){
-				if (($prConsultaDetalhada == 1) or ($ConsultaGeral == true)) {
-						$DiasAtrasado = $row["DIASATRASADO"];							
-						$ValorDaMulta = 0;
-						$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
-					}
-					
+				$DiasAtrasado = $row["DIASATRASADO"];							
+				$ValorDaMulta = 0;
+				$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
+				
+				if ($prTipoConsulta == 4) {
+					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
+					"idaluno"               => $row["IDALUNO"],
+					"nomealuno"             => $row["NOMEALUNO"],					
+					"telefone"              => $row["TELEFONE"],
+					"qtde"                  => $row["QTDE"]
+				}		
 				$retornoConsulta[] = array( 
 					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
 					"idaluno"               => $row["IDALUNO"],
@@ -79,6 +86,7 @@ class Emprestimos {
 					"diasatrasado"          => $DiasAtrasado,
 					"valordamulta"          => $ValorDaMulta						
 				);
+				
 			}
 			return $retornoConsulta;
 		}            
