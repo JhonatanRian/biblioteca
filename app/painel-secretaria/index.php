@@ -82,7 +82,13 @@ $EmprestimosConnection = new Emprestimos();
                                 $consultaEmprestimos = $EmprestimosConnection->GetInfoEmprestimos(0, 4);
                                 if (!empty($consultaEmprestimos)) {
                                     foreach ($consultaEmprestimos as $emprestimos) {
-                                        echo "<tr>";
+                                        if ($emprestimos["qtde"] == 3){
+                                            echo "<tr class='table-danger'>";
+                                        } else if ($emprestimos["qtde"] == 2){
+                                            echo "<tr class='table-warning'>";
+                                        } else{
+                                            echo "<tr>";
+                                        }
                                         echo "<th scope='row'>" . $emprestimos["nomealuno"] . "</th>";
                                         echo "<td>" . $emprestimos["telefone"] . "</td>";
                                         echo "<td>" . $emprestimos["qtde"] . "</td>";
@@ -97,15 +103,9 @@ $EmprestimosConnection = new Emprestimos();
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo "<td col=4 > Nenhum resultado encontrado. </td>";
+                                    echo "<td colspan=4 > Nenhum resultado encontrado. </td>";
                                 }
                                 ?>
-                                <!-- <tr>
-                                    <th scope="row">estatistica</th>
-                                    <td>Mark</td>
-                                    <td>13/01/2023</td>
-                                    <td>(99) 99999-9999</td>
-                                </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -141,7 +141,7 @@ $EmprestimosConnection = new Emprestimos();
 
                                         // echo $alunos["idaluno"] . "<br>";
                                         
-                                        echo "<a href='../alugar' class='list-group-item list-group-item-action' >";
+                                        echo "<a href='../alugar?id_aluno=".$alunos["idaluno"]."' class='list-group-item list-group-item-action' >";
                                         echo $alunos["nomealuno"]." - ".$alunos["cpfaluno"];
                                         echo "</a>";
                                         // echo $alunos["datacadastro"] . "<br>";

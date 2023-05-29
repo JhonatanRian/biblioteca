@@ -38,11 +38,11 @@
                     Entrar
                 </button>
             </a>
-            <a class="py-2 d-none d-md-inline-block" href="./livros/">
+            <!-- <a class="py-2 d-none d-md-inline-block" href="./livros/">
                 <button class="btn btn-secondary active">
                     Livros
                 </button>
-            </a>
+            </a> -->
         </nav>
     </header>
     <main>

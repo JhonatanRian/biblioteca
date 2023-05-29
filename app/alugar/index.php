@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
+<?php
+require '../config/database/TAlunosMC.php';
+require_once '../functions/alugar.php';
+require '../config/database/TEmprestimos_LivrosMC.php';
+
+$AlunosConnection      = new Alunos();
+$EmprestimosConnection = new Emprestimos();
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alugar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
+
 <body>
-<header class="site-header sticky-top py-1 text-bg-dark">
+    <header class="site-header sticky-top py-1 text-bg-dark">
         <nav class="container d-flex flex-column flex-md-row justify-content-between">
             <a class="py-2" href="#" aria-label="Product">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" viewBox="0 0 460 460" xml:space="preserve" width="44" height="44" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mx-auto" role="img" viewBox="0 0 24 24">
@@ -48,5 +60,79 @@
             </span>
         </nav>
     </header>
+    <main class="container">
+        <br>
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <div class="card">
+                    <div class="card-header">
+                        Alugar um livro
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="post">
+                            <div class="row g-3">
+                                <div class="col-10">
+                                    <label class="form-label" for="search_livro">procurar livro</label>
+                                    <input class="form-control" type="search" name="nome_livro" id="search_livro">
+
+                                </div>
+                                <div class="col-2 pt-2">
+                                    <br>
+                                    <button class="btn btn-primary" id="btn-buscar">
+                                        buscar
+                                    </button>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <label for="aluno" class="form-label">Aluno que está alugando</label>
+                                    <?php
+
+                                    $n = $_GET["id_aluno"];
+
+                                    if ($n) {
+                                        $consultaAlunos = $AlunosConnection->GetInfoAlunos($n, 0);
+                                        if (!empty($consultaAlunos)) {
+                                            foreach ($consultaAlunos as $alunos) {
+                                                echo "<input type='text' name='aluno' readonly class='form-control form-control-plaintext text-center' id='aluno' value='" . $alunos["nomealuno"] . " " . $alunos["turma"] . "'>";
+                                                echo "<input type='text' name='idaluno' readonly hidden class='form-control form-control-plaintext text-center' id='aluno' value='" . $alunos["idaluno"] . "'>";
+                                            }
+                                        } else {
+                                            echo "<input type='text' readonly class='form-control-plaintext' id='aluno' value='nenhum aluno encontrado'>";
+                                        }
+                                    } else {
+                                        echo "<input type='text' readonly class='form-control-plaintext' id='aluno' value='Não foi passado nenhum aluno'>";
+                                    }
+                                    ?>
+
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label" for="floatingSelect">Resultado da pesquisa</label>
+                                    <div class="form-floating">
+                                        <select name="livro" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                            <option value="0" selected>Nenhum livro encontrado</option>
+                                        </select>
+                                        <label for="floatingSelect">Livros</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <button class="btn btn-success">
+                                        alugar
+                                    </button>
+                                </div>
+                                <div class="col-12">
+                                    <?php
+                                    VerificarCampos()
+
+                                    ?>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../static/js/script.js"></script>
 </body>
+
 </html>
