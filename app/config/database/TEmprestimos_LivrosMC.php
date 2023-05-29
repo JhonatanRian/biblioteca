@@ -44,7 +44,7 @@ class Emprestimos {
 		}
 
 		if ($prTipoConsulta == 4) {
-			$sqlConsAux = " SELECT EMP.ORDEMEMPRESTIMOS, EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
+			$sqlConsAux = " SELECT EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
 						  " FROM TEMPRESTIMOS_LIVROS EMP ".
 						  " LEFT OUTER JOIN TALUNOS AL ON (EMP.IDALUNO = AL.IDALUNO) ".
 						  " GROUP BY EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE ".
@@ -65,7 +65,6 @@ class Emprestimos {
 				
 				if ($prTipoConsulta == 4) {
 					$retornoConsulta[] = array( 
-					"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
 					"idaluno"               => $row["IDALUNO"],
 					"nomealuno"             => $row["NOMEALUNO"],					
 					"telefone"              => $row["TELEFONE"],
