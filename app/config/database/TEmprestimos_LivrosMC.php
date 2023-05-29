@@ -4,6 +4,7 @@
 Solicitação		Programador   	Data        Alteração
 000001			Nathan.Faria	16/05/2023	Criado funções de manipulação da tabela TEMPRESTIMOS_LIVROS.
 000002          Nathan.Faria    26/05/2023  Removido filtro de consulta detalhada, criada consulta especifica para painel secretária.	  
+000003          Nathan.Faria    29/05/2023  Feito ajuste de erro de execusão.
 **************************************
 */
 
@@ -43,7 +44,7 @@ class Emprestimos {
 		}
 
 		if ($prTipoConsulta == 4) {
-			$sqlConsAux = " SELECT EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
+			$sqlConsAux = " SELECT EMP.ORDEMEMPRESTIMOS EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE, COUNT(EMP.IDALUNO) AS QTDE ".
 						  " FROM TEMPRESTIMOS_LIVROS EMP ".
 						  " LEFT OUTER JOIN TALUNOS AL ON (EMP.IDALUNO = AL.IDALUNO) ".
 						  " GROUP BY EMP.IDALUNO, AL.NOMEALUNO, AL.TELEFONE ".
@@ -51,19 +52,16 @@ class Emprestimos {
 
 		} else {
 			$sqlConsAux = " SELECT EMP.*, AL.NOMEALUNO, LI.NOMELIVRO, CASE WHEN ((EMP.DATADADEVOLUCAO IS NULL) OR (EMP.DATAPREVISTADEVOLUCAO < EMP.DATADADEVOLUCAO)) THEN DATEDIFF(NOW(), DATAPREVISTADEVOLUCAO) ELSE 0 END AS DIASATRASADO ".
-						  " FROM temprestimos_livros EMP ".
-						  " LEFT OUTER JOIN talunos AL ON (EMP.IDALUNO = AL.IDALUNO) ". 
-						  " LEFT OUTER JOIN tlivros LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
-						  " LEFT OUTER JOIN tbiblioteca BL ON (EMP.IDOPERADOR = BL.IDOPERADOR)";
+						  " FROM TEMPRESTIMOS_LIVROS EMP ".
+						  " LEFT OUTER JOIN TALUNOS AL ON (EMP.IDALUNO = AL.IDALUNO) ". 
+						  " LEFT OUTER JOIN TLIVROS LI ON (EMP.IDLIVRO = LI.IDLIVRO) ".
+						  " LEFT OUTER JOIN TBIBLIOTECA BL ON (EMP.IDOPERADOR = BL.IDOPERADOR)";
 		}
 	
 		$sql = $sqlConsAux.$filtro;
 		$resultadoSqlCons = $this->connection->query($sql);
 		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
 			while($row = $resultadoSqlCons->fetch_assoc()){
-				$DiasAtrasado = $row["DIASATRASADO"];							
-				$ValorDaMulta = 0;
-				$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
 				
 				if ($prTipoConsulta == 4) {
 					$retornoConsulta[] = array( 
@@ -75,6 +73,10 @@ class Emprestimos {
 					);
 				}
 				else {
+					$DiasAtrasado = $row["DIASATRASADO"];							
+					$ValorDaMulta = 0;
+					$ValorDaMulta = $row["DIASATRASADO"] * $ValorDeMultaConstante;
+
 					$retornoConsulta[] = array( 
 						"ordememprestimos"      => $row["ORDEMEMPRESTIMOS"],
 						"idaluno"               => $row["IDALUNO"],
