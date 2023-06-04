@@ -1,6 +1,7 @@
 <?php
-require '../config/database/TLivrosMC.php';
-$LivrosConnection      = new Livros();
+require_once '/app/config/authenticate.php';
+require '/app/config/database/TLivrosMC.php';
+$LivrosConnection = new Livros();
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $nome_livro = $_GET["nome_livro"];

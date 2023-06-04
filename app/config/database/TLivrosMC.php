@@ -29,8 +29,10 @@ class Livros {
 		
 		if (($prInfoConsulta == 0) and ($prTipoConsulta == 0)){
 			$ConsultaGeral = true;
+		}else{
+			$prInfoConsulta = $this->connection->real_escape_string($prInfoConsulta);
 		}
-		
+
 		// Consulta por ID do LIVRO
 		if (($prTipoConsulta == 0) and ($ConsultaGeral == false)) {
 			$filtro = " WHERE IDLIVRO = $prInfoConsulta";
@@ -61,8 +63,7 @@ class Livros {
 				);
 			}
 			return $retornoConsulta;
-		}            
-        
+		}
     }
 	
 	public function InsertEhUpdateLivros($prIdLivro, $prNomeLivro, $prNomeAutor, $prGenero, $prQtde, $prSinopse, $prCadastroAtivo) {

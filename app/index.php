@@ -1,3 +1,7 @@
+<?php
+include "../app/config/authenticate.php";
+?>
+
 <!doctype html>
 <html lang="pt-br">
 

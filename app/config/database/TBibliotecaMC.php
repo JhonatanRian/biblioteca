@@ -40,15 +40,20 @@ class Biblioteca {
 		else if (($prTipoConsulta == 2) and ($ConsultaGeral == false)) {
 			$filtro = " WHERE NIVELDEACESSO = '$prInfoConsulta'";
 		}
+		else if (($prTipoConsulta == 3) and ($ConsultaGeral == false)) {
+			$prInfoConsulta = $this->connection->real_escape_string($prInfoConsulta);
+			$filtro = " WHERE CPF = '$prInfoConsulta'";
+		}
 		
 		$sql = "SELECT * FROM TBIBLIOTECA ".$filtro;
 		$resultadoSqlCons = $this->connection->query($sql);
 		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
-			while($row = $resultadoSqlCons->fetch_assoc()){	
+			while($row = $resultadoSqlCons->fetch_assoc()){
 				$retornoConsulta[] = array(
 					"idoperador"       => $row["IDOPERADOR"],
 					"nomeoperador"     => $row["NOMEOPERADOR"],						
-					"niveldeacesso"    => $row["NIVELDEACESSO"]						
+					"is_staff"    => $row["IS_STAFF"],
+					"is_superuser" => $row["IS_SUPERUSER"]						
 				);
 			}
 			return $retornoConsulta;
@@ -57,6 +62,22 @@ class Biblioteca {
         
     }
 	
+	public function VerificarLogin($cpf, $senha) {
+		$cpf = $this->connection->real_escape_string($cpf);
+		$senha = $this->connection->real_escape_string($senha);
+
+		$sql = "SELECT * FROM `TBIBLIOTECA` WHERE CPF = '$cpf' AND SENHA = '$senha'";
+
+		$results = $this->connection->query(($sql));
+		$numRows = $results->num_rows;
+		if ($numRows == 1){
+			$user = $results->fetch_assoc();
+			return $user;
+		}else {
+			return false;
+		}
+
+	}
 	
 	public function InsertEhUpdateOperadores($prIdOperador, $prNomeOperador, $prNivelDeAcesso) {
 		if (!empty(trim($prIdOperador))) {

@@ -17,7 +17,7 @@ async function renderOptions(e) {
     myHeader.append("Content-Type", "application/json");
 
     let value = inputLivro.value;
-    let response = await fetch(`../functions/livros.php?nome_livro=${value}`, {
+    let response = await fetch(`livros.php?nome_livro=${value}`, {
         method: "GET",
         headers: myHeader,
         mode: "cors",

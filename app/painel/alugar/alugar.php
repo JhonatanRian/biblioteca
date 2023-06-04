@@ -1,12 +1,12 @@
 <?php
-require "../config/database/TEmprestimos_LivrosMC.php";
+require_once "/app/config/authenticate.php";
 
-$EmprestimosLivros = new Emprestimos();
 
 global $camposObrigatorios;
 $camposObrigatorios = array(
     "livro",
-    "idaluno"
+    "idaluno",
+    "data"
 );
 
 function VerificarCampos()
@@ -25,6 +25,19 @@ function VerificarCampos()
     }
 }
 
+function SalvarAluguel()
+{
+    require "/app/config/config.php";
 
+    $id_aluno = $_POST["idaluno"];
+    $id_livro = $_POST["livro"];
+    $id_op = $_SESSION["id"];
+    $dataprev = $_POST["data"];
+    $dataAtual = date("d/m/Y");
+    $dataBanco = date("Y/m/d", strtotime($dataAtual));
+    
+    return $EmprestimosLivrosQuery->InsertEmprestimos($id_aluno, $id_livro, $id_op, $dataBanco, $dataprev, $dataprev);
+
+}
 
 ?>
