@@ -15,4 +15,6 @@ $GeneroQuery = new Generos();
 $CORESCAPAS = array();
 $FONTESCAPAS = array(); 
 
+$ELEMPAGES = 10;
+
 ?>
