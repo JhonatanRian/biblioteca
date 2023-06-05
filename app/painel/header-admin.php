@@ -38,7 +38,7 @@
             </a>
             <a class="py-2 d-none d-md-inline-block me-1" href="/painel/alunos/">
                 <button class="btn btn-secondary">
-                    Aluno
+                    Alunos
                 </button>
             </a>
             <a class="py-2 d-none d-md-inline-block me-1" href="/painel/alugar/">
@@ -46,7 +46,7 @@
                     Alugueis
                 </button>
             </a>
-            <a class="py-2 d-none d-md-inline-block me-1" href="./operarios/">
+            <a class="py-2 d-none d-md-inline-block me-1" href="painel/operarios/">
                 <button class="btn btn-secondary">
                     Operarios
                 </button>
