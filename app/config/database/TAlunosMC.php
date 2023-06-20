@@ -244,4 +244,29 @@ class Alunos
 			return false;
 		}
 	}
+
+	public function DeleteAluno($id)
+	{
+		$sqlAux = "SELECT * FROM TALUNOS WHERE IDALUNO = $id";
+		$resultadoSqlAux = $this->connection->query($sqlAux);
+
+		if ($resultadoSqlAux !== false && $resultadoSqlAux->num_rows > 0) {
+			$sql = "DELETE FROM TALUNOS WHERE IDALUNO = $id";
+			$retornoSqlCad = $this->connection->query($sql);
+			if ($retornoSqlCad) {
+				$resp = array(true, "Registro deletado com sucesso!");
+				return $resp;
+			} else {
+				$error = $this->connection->error;
+				if (strpos($error, "FOREIGN KEY")){
+					return array(false, "Não é possivel deletar esse aluno pois algum registro está relacionado a ele.");
+				}
+				$resp = array(false, "Não foi possível deletar. Erro: " . $error);
+				return $resp;
+			}
+		} else {
+			$resp = array(false, "Não foi encontrado o registro passado, verifique com o suporte.");
+			return $resp;
+		}
+	}
 }

@@ -23,7 +23,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alunos</title>
+    <title>Genero</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 
@@ -39,30 +39,16 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     $camposObrigatoriosAluno = array(
         "id",
         "nome",
-        "cpf",
-        "contato",
-        "curso",
-        "turma",
     );
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($camposObrigatoriosAluno as $campo) {
             if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
-                $resp =  array(false, "O campo '$campo' é obrigatório.");
+                $resp = array(false, "O campo '$campo' é obrigatório.");
                 break;
             }
         }
-        if (isset($_POST["ex-aluno"])) {
-            $exAluno = 1; // TRUE
-        } else {
-            $exAluno = 0; // FALSE
-        }
-        if (isset($_POST["cad-ativo"])) {
-            $cad = 1;
-        } else {
-            $cad = 0;
-        }
         if (!isset($resp)){
-            $resp = $AlunosQuery->InsertEhUpdateAlunos($_POST["id"], $_POST["nome"], $_POST["cpf"], $exAluno, $_POST["curso"], $_POST["turma"], $_POST["contato"], $cad);
+            $resp = $GeneroQuery->InsertEhUpdateGeneros($_POST["id"], $_POST["nome"]);
         }
     }
     ?>
@@ -80,20 +66,20 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                 <div class="card mt-2">
                                     <div class="card-body">
                                         <?php
-                                        if ($_GET["id_aluno"]){
-                                            $aluno_id = $_GET["id_aluno"];
-                                            $aluno = $AlunosQuery->GetInfoAlunos($aluno_id, 0);
-                                            if ($aluno){
-                                                $aluno = $aluno[0];
+                                        if ($_GET["id_genero"]){
+                                            $genero_id = $_GET["id_genero"];
+                                            $genero = $GeneroQuery->GetInfoGeneros($genero_id, 0);
+                                            if ($genero){
+                                                $genero = $genero[0];
                                                 include "./form.php";
                                             }else {
                                                 echo "<div class='alert alert-danger'>";
-                                                echo "Aluno não foi encontrado no sistema";
+                                                echo "Genero não foi encontrado no sistema";
                                                 echo "</div>";
                                             }
                                         } else {
                                             echo "<div class='alert alert-danger'>";
-                                            echo "Aluno não selecionado";
+                                            echo "Genero não selecionado";
                                             echo "</div>";
                                         }
                                         ?>
@@ -107,30 +93,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <script src="/static/js/scriptAluno.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#cpf').mask('000.000.000-00');
-            $('#contato').mask('+55 (99) 99999-9999');
-
-            $('#cpf').on('keypress', function(event) {
-                var tecla = event.which || event.keyCode;
-                if (tecla < 48 || tecla > 57) {
-                    event.preventDefault();
-                }
-            });
-
-            $('#contato').on('keypress', function(event) {
-                var tecla = event.which || event.keyCode;
-                if (tecla < 48 || tecla > 57) {
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
-    <script src="/static/js/scriptDeletarAluno.js"></script>
+    <script src="/static/js/scriptGenero.js"></script>
 </body>
 
 </html>

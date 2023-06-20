@@ -34,7 +34,6 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     } else {
         include "/app/painel/header-op.php";
     }
-
     global $camposObrigatoriosAluno;
     $camposObrigatoriosAluno = array(
         "nome",
@@ -43,13 +42,12 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         "curso",
         "turma",
     );
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($camposObrigatoriosAluno as $campo) {
             if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
-                echo "<div class='alert alert-danger'>";
-                echo "O campo '$campo' é obrigatório.";
-                echo "</div>";
-                return false;
+                $resp = array(false, "O campo '$campo' é obrigatório.");
+                break;
             }
         }
         if (isset($_POST["ex-aluno"])) {
@@ -62,7 +60,9 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         } else {
             $cad = 0;
         }
-        $resp = $AlunosQuery->InsertEhUpdateAlunos("", $_POST["nome"], $_POST["cpf"], $exAluno, $_POST["curso"], $_POST["turma"], $_POST["contato"], $cad);
+        if (!isset($resp)) {
+            $resp = $AlunosQuery->InsertEhUpdateAlunos("", $_POST["nome"], $_POST["cpf"], $exAluno, $_POST["curso"], $_POST["turma"], $_POST["contato"], $cad);
+        }
     }
     ?>
     <?php
@@ -75,10 +75,9 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         $filter = $_GET["filter"];
         $search = $_GET["search"];
         $numAlunos = $AlunosQuery->CountAlunos($filter, $search);
-        echo $numAlunos;
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, 0, $filter, $search);
-    } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["filter"])) { // se existir o page e o filtro
+    } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se existir o page e o filtro
         $page = $_GET["page"];
         $filter = $_GET["filter"];
         $search = $_GET["search"];
@@ -86,13 +85,14 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $offset = ($page - 1) * $ELEMPAGES;
         $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, $offset, $filter, $search);
-    } elseif (isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["filter"])) { // se exitir somente o page
+    } elseif (isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["search"])) { // se exitir somente o page
+        $numAlunos = $AlunosQuery->CountAlunos("all", "");
         $page = $_GET["page"];
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $offset = ($page - 1) * $ELEMPAGES;
         $alunos = $AlunosQuery->GetAlunosPage($ELEMPAGES, $offset);
     } else {
-        $numAlunos = $AlunosQuery->CountAlunos("all");
+        $numAlunos = $AlunosQuery->CountAlunos("all", "");
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $alunos =  $AlunosQuery->GetAlunosPage($ELEMPAGES, 0);
     }
@@ -127,7 +127,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                 </li>
                             </ul>
                             <div class="input-group">
-                                <input class="form-control border border-primary" type="search" name="search" id="search_livro" placeholder="Buscar aluno por nome">
+                                <input class="form-control border border-primary" type="search" name="search" id="search_aluno" placeholder="Buscar aluno por nome">
                                 <button class="btn btn-outline-secondary" type="submit" id="btn-buscar">
                                     buscar
                                 </button>
@@ -171,45 +171,47 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                         </table>
                                         <nav aria-label="Navegar por livros" class="mt-1">
 
-                                            <ul class="pagination">
-                                                <?php
-                                                if (!isset($_GET["page"]) || ($_GET["page"] - 1) < 1) {
-                                                    echo "
-                                                            <li class='page-item disabled'>
-                                                                <a class='page-link'>Previous</a>
-                                                            </li>";
+                                            <?php
+                                            $current_page = isset($_GET["page"]) ? $_GET["page"] : 1;
+
+                                            echo "<ul class='pagination'>";
+
+                                            if ($current_page == 1) {
+                                                echo "<li class='page-item disabled'>
+                                                        <a class='page-link'>Previous</a>
+                                                    </li>";
+                                            } else {
+                                                $previous_page = $current_page - 1;
+                                                echo "<li class='page-item'>
+                                                        <a href='/painel/alunos/?page=$previous_page' class='page-link'>Previous</a>
+                                                    </li>";
+                                            }
+
+                                            for ($i = 1; $i <= $pages; $i++) {
+                                                if ($i == $current_page) {
+                                                    echo "<li class='page-item active'>
+                                                            <a class='page-link'>$i</a>
+                                                        </li>";
                                                 } else {
-                                                    $p = $_GET["page"] - 1;
-                                                    echo "
-                                                            <li class='page-item'>
-                                                                <a href='/painel/alunos/?page=$p' class='page-link'>Previous</a>
-                                                            </li>";
+                                                    echo "<li class='page-item'>
+                                                            <a href='/painel/alunos/?page=$i' class='page-link'>$i</a>
+                                                        </li>";
                                                 }
+                                            }
 
-                                                for ($i = 1; $i <= $pages; $i++) {
-                                                    echo "<li class'page-item'><a class='page-link' href='/painel/alunos/?page=$i'>$i</a></li>";
-                                                }
-                                                if (!isset($_GET["page"]) && $pages <= 1) {
+                                            if ($current_page == $pages) {
+                                                echo "<li class='page-item disabled'>
+                                                        <a class='page-link'>Next</a>
+                                                    </li>";
+                                            } else {
+                                                $next_page = $current_page + 1;
+                                                echo "<li class='page-item'>
+                                                        <a href='/painel/alunos/?page=$next_page' class='page-link'>Next</a>
+                                                    </li>";
+                                            }
 
-                                                    echo "
-                                                            <li class='page-item disabled'>
-                                                                <a class='page-link'>Next</a>
-                                                            </li>";
-                                                } else if (!isset($_GET["page"]) && $pages > 1) {
-                                                    echo "
-                                                            <li class='page-item'>
-                                                                <a href='/painel/alunos/?page=2' class='page-link'>Next</a>
-                                                            </li>";
-                                                } else if (isset($_GET["page"]) && ($_GET["page"] + 1) > $pages) {
-                                                    $p = $_GET["page"] + 1;
-                                                    echo "
-                                                            <li class='page-item disabled'>
-                                                                <a href='/painel/alunos/?page=$p' class='page-link'>Next</a>
-                                                            </li>";
-                                                }
-
-                                                ?>
-                                            </ul>
+                                            echo "</ul>";
+                                            ?>
                                         </nav>
                                     </div>
                                 </div>
@@ -256,14 +258,16 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                             <div class="col-sm-12 col-md-12 col-lg-12 text-center">
                                                 <?php
 
-                                                if ($resp[0]) {
-                                                    echo "<div class='alert alert-success'>";
-                                                    echo $resp[1];
-                                                    echo "</div>";
-                                                } else if ($resp[0]){
-                                                    echo "<div class='alert alert-danger'>";
-                                                    echo $resp[1];
-                                                    echo "</div>";
+                                                if ($resp != NULL) {
+                                                    if ($resp[0]) {
+                                                        echo "<div class='alert alert-success'>";
+                                                        echo $resp[1];
+                                                        echo "</div>";
+                                                    } else {
+                                                        echo "<div class='alert alert-danger'>";
+                                                        echo $resp[1];
+                                                        echo "</div>";
+                                                    }
                                                 }
                                                 ?>
                                             </div>
@@ -278,7 +282,6 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <script src="/static/js/scriptAluno.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
     <script>
@@ -300,6 +303,16 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                 }
             });
         });
+        const inputsCheck = document.querySelectorAll("body > main > div > div > div > div.card-body > form > ul input");
+        const LabelsCheck = document.querySelectorAll("body > main > div > div > div > div.card-body > form > ul label");
+        const inputSearch = document.querySelector("#search_aluno");
+
+        Array.from(inputsCheck).forEach((elem, index) => {
+            elem.addEventListener("change", (event) => {
+                let label = LabelsCheck[index];
+                inputSearch.setAttribute("placeholder", `Buscar aluno por ${label.textContent}`)
+            })
+        })
     </script>
 </body>
 

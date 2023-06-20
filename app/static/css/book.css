@@ -2,17 +2,19 @@
 
 /* estrutura */
 .book {
-    padding: 40px;
-    text-align: center;
-    font-size: 200%;
+    font-size: 1.5em;
     width: 150px;
     height: 200px;
     border-radius: 5px;
 }
 
+.subtitle {
+    text-align: center;
+    font-size: 0.7rem;
+}
 /* temas  */
 
-.book-brown {
+.book-brown{
     background-color: #8B4513;
     box-shadow: 7px 10px #f47c27;
     color: aliceblue;
@@ -57,7 +59,7 @@
 .book-green {
     background-color: #069a00;
     box-shadow: 7px 10px #187f19b5;
-    color: aliceblue;
+    color: rgb(18, 20, 20);
 }
 
 /* fontes  */
@@ -73,3 +75,4 @@
 .book-text-pacific{
     font-family: 'Pacifico', cursive;
 }
+

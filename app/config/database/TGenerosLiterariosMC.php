@@ -21,7 +21,8 @@ class Generos {
 		//}
     }
 
-    public function GetInfoGeneros($prInfoConsulta, $prTipoConsulta) {        
+    public function GetInfoGeneros($prInfoConsulta, $prTipoConsulta) 
+	{        
 		$retornoConsulta = array();
 		$ConsultaGeral   = false;
 		$filtro          = "";
@@ -52,34 +53,135 @@ class Generos {
 		}            
     }
 	
-	public function InsertEhUpdateGeneros($prIdGenero, $prNomeGenero) {
-		if (!empty(trim($prIdGenero))) {
+	public function InsertEhUpdateGeneros($prIdGenero, $prNomeGenero) 
+	{
+		$prIdGenero = trim($prIdGenero);
+		$prNomeGenero = trim($prNomeGenero);
+	
+		if (!empty($prIdGenero)) {
 			$AtualizaRegistro = true;
 		} else {
 			$AtualizaRegistro = false;
 		}
-		
-		if ($AtualizaRegistro == true) {
+	
+		if ($AtualizaRegistro) {
 			$sqlAux = "SELECT * FROM TGENEROSLITERARIOS WHERE IDGENERO = $prIdGenero";
 			$resultadoSqlAux = $this->connection->query($sqlAux);
-            
+	
 			if ($resultadoSqlAux !== false && $resultadoSqlAux->num_rows > 0) {
 				$sqlCad = "UPDATE TGENEROSLITERARIOS SET NOMEGENERO = '$prNomeGenero' WHERE IDGENERO = $prIdGenero";
 				$retornoSqlCad = $this->connection->query($sqlCad);
-				
-				return "Registro atualizado com sucesso!";
+				if ($retornoSqlCad) {
+					return array(true, "Registro atualizado com sucesso!");
+				} else {
+					return array(false, "Não foi possível atualizar o registro.");
+				}
 			} else {
-				return "Genero não encontrado para atualização!";
+				return array(false, "Gênero não encontrado para atualização!");
 			}
-				
 		} else {
-			if (trim($prNomeGenero) !== '') {
+			if (!empty($prNomeGenero)) {
 				$sqlcad = "INSERT INTO TGENEROSLITERARIOS(NOMEGENERO) VALUES ('$prNomeGenero')";
 				$retornoSql = $this->connection->query($sqlcad);
-				return "Registro inserido com sucesso!";
-			}	
-		}	
+				if ($retornoSql) {
+					return array(true, "Registro inserido com sucesso!");
+				} else {
+					return array(false, "Não foi possível inserir os dados.");
+				}
+			}
+		}
+	
+		return array(false, "Parâmetros inválidos.");
+	}
+
+	public function CountGeneros($value)
+	{
+		if (isset($value) || strlen($value) > 0) {
+			$sqlConsAux = "SELECT COUNT(*) AS qtde 
+						FROM TGENEROSLITERARIOS 
+						WHERE NOMEGENERO LIKE '%$value%'";
+		} else {
+			$sqlConsAux = "SELECT COUNT(*) AS qtde 
+						FROM TGENEROSLITERARIOS";
+		} 
+
+		$res = $this->connection->query($sqlConsAux);
+		if ($res !== false && $res->num_rows > 0) {
+			$row = $res->fetch_assoc();
+			$quantidade = $row['qtde'];
+			return $quantidade;
+		} else {
+			return 0;
+		}
+	}
+
+	public function GetGenerosPage($limit, $offset) 
+	{
+		$sql = "SELECT * FROM TGENEROSLITERARIOS LIMIT $limit OFFSET $offset";
+
+		$resultadoSqlCons = $this->connection->query($sql);
+		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
+			$retornoConsulta = array(); // Inicializar a variável como um array vazio
+
+			while ($row = $resultadoSqlCons->fetch_assoc()) {
+				$retornoConsulta[] = array(
+					"idgenero"       => $row["IDGENERO"],
+					"nomegenero"     => $row["NOMEGENERO"],
+				);
+			}
+			return $retornoConsulta;
+		} else {
+			return false;
+		}
+	}
+
+	public function GetGenerosPageFilter($limit, $offset, $value = "")
+	{
+		if (!isset($value) || strlen($value) == 0) {
+			$sql = "SELECT * FROM TGENEROSLITERARIOS LIMIT $limit OFFSET $offset";
+		} else {
+			$sql = "SELECT * FROM TGENEROSLITERARIOS WHERE NOMEGENERO LIKE '%$value%' LIMIT $limit OFFSET $offset";
+		}
+
+		$resultadoSqlCons = $this->connection->query($sql);
+		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
+			$retornoConsulta = array(); // Inicializar a variável como um array vazio
+
+			while ($row = $resultadoSqlCons->fetch_assoc()) {
+				$retornoConsulta[] = array(
+					"idgenero"       => $row["IDGENERO"],
+					"nomegenero"     => $row["NOMEGENERO"],
+				);
+			}
+			return $retornoConsulta;
+		} else {
+			return false;
+		}
+	}
+
+	public function DeleteGenero($id)
+	{
+		$sqlAux = "SELECT * FROM TGENEROSLITERARIOS WHERE IDGENERO = $id";
+		$resultadoSqlAux = $this->connection->query($sqlAux);
+
+		if ($resultadoSqlAux !== false && $resultadoSqlAux->num_rows > 0) {
+			$sql = "DELETE FROM TGENEROSLITERARIOS WHERE IDGENERO = $id";
+			$retornoSqlCad = $this->connection->query($sql);
+			if ($retornoSqlCad) {
+				$resp = array(true, "Registro deletado com sucesso!");
+				return $resp;
+			} else {
+				$error = $this->connection->error;
+				if (strpos($error, "FOREIGN KEY")){
+					return array(false, "Não é possivel deletar esse genero pois algum registro está relacionado a ele.");
+				}
+				$resp = array(false, "Não foi possível deletar. Erro: " . $error);
+				return $resp;
+			}
+		} else {
+			$resp = array(false, "Não foi encontrado o registro passado, verifique com o suporte.");
+			return $resp;
+		}
 	}
 }
-
 ?>

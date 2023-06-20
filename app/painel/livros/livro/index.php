@@ -23,8 +23,9 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alunos</title>
+    <title>Genero</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/book.css">
 </head>
 
 <body>
@@ -39,30 +40,32 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     $camposObrigatoriosAluno = array(
         "id",
         "nome",
-        "cpf",
-        "contato",
-        "curso",
-        "turma",
+        "autor",
+        "genero",
+        "sinopse",
+        "cad-ativo",
+        "qtde",
+        "corcapa",
+        "fonte"
     );
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($camposObrigatoriosAluno as $campo) {
             if (!isset($_POST[$campo]) || empty($_POST[$campo])) {
-                $resp =  array(false, "O campo '$campo' é obrigatório.");
+                $resp = array(false, "O campo '$campo' é obrigatório.");
                 break;
             }
-        }
-        if (isset($_POST["ex-aluno"])) {
-            $exAluno = 1; // TRUE
-        } else {
-            $exAluno = 0; // FALSE
         }
         if (isset($_POST["cad-ativo"])) {
             $cad = 1;
         } else {
             $cad = 0;
         }
-        if (!isset($resp)){
-            $resp = $AlunosQuery->InsertEhUpdateAlunos($_POST["id"], $_POST["nome"], $_POST["cpf"], $exAluno, $_POST["curso"], $_POST["turma"], $_POST["contato"], $cad);
+        if (!isset($resp)) {
+            $corcapa = $CORESCAPAS[$_POST["corcapa"]];
+            $resp = $LivrosQuery->InsertEhUpdateLivros($_POST["id"], $_POST["nome"], 
+                                                       $_POST["autor"], $_POST["genero"], 
+                                                       $_POST["qtde"], $_POST["sinopse"], 
+                                                       $cad, $corcapa, $_POST["fonte"]);
         }
     }
     ?>
@@ -76,27 +79,40 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-sm-12 col-md-6 col-lg-6 m-auto">
+                            <div class="col-sm-12 col-md-6 col-lg-6 ">
                                 <div class="card mt-2">
                                     <div class="card-body">
                                         <?php
-                                        if ($_GET["id_aluno"]){
-                                            $aluno_id = $_GET["id_aluno"];
-                                            $aluno = $AlunosQuery->GetInfoAlunos($aluno_id, 0);
-                                            if ($aluno){
-                                                $aluno = $aluno[0];
+                                        if ($_GET["id_livro"]){
+                                            $livro_id = $_GET["id_livro"];
+                                            $livro = $LivrosQuery->GetInfoLivros($livro_id, 0);
+                                            if ($livro){
+                                                $livro = $livro[0];
                                                 include "./form.php";
                                             }else {
                                                 echo "<div class='alert alert-danger'>";
-                                                echo "Aluno não foi encontrado no sistema";
+                                                echo "Livro não foi encontrado no sistema";
                                                 echo "</div>";
                                             }
                                         } else {
                                             echo "<div class='alert alert-danger'>";
-                                            echo "Aluno não selecionado";
+                                            echo "Livro não selecionado";
                                             echo "</div>";
                                         }
                                         ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="card">
+                                    <div class="card-header">Livro</div>
+                                    <div class="card-body">
+                                        <?php
+                                        if (isset($livro)){
+                                            include "./livro.php";
+                                        }
+                                        ?>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -107,30 +123,12 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <script src="/static/js/scriptAluno.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
+    <script src="/static/js/scriptLivro.js"></script>
+    <script src="/static/js/scriptGenero.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#cpf').mask('000.000.000-00');
-            $('#contato').mask('+55 (99) 99999-9999');
-
-            $('#cpf').on('keypress', function(event) {
-                var tecla = event.which || event.keyCode;
-                if (tecla < 48 || tecla > 57) {
-                    event.preventDefault();
-                }
-            });
-
-            $('#contato').on('keypress', function(event) {
-                var tecla = event.which || event.keyCode;
-                if (tecla < 48 || tecla > 57) {
-                    event.preventDefault();
-                }
-            });
-        });
+        pageret = "/painel/livros";
     </script>
-    <script src="/static/js/scriptDeletarAluno.js"></script>
+
 </body>
 
 </html>
