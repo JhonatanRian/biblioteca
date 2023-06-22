@@ -141,9 +141,10 @@ class Livros {
                            FROM TLIVROS 
                            WHERE NOMEAUTOR = '$value'";
 			} else if ($campoEsp == "genero") {
-				$sqlConsAux = "SELECT COUNT(*) AS qtde 
-                           FROM TLIVROS 
-                           WHERE GENERO LIKE '%$value%'";
+				$sqlConsAux = "SELECT COUNT(TL.IDLIVRO) AS qtde 
+				FROM TLIVROS TL 
+				JOIN TGENEROSLITERARIOS TG ON TL.GENERO = TG.IDGENERO 
+				WHERE TG.NOMEGENERO LIKE '%$value%';";
 			} else if ($campoEsp == "all") {
 				$sqlConsAux = "SELECT COUNT(*) AS qtde 
                            FROM TLIVROS";

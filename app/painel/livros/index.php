@@ -62,7 +62,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     }
     ?>
     <?php
-    if (!isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["search"])) {
+    if ((!isset($_GET["filter"]) && !isset($_GET["search"])) && !isset($_GET["page"])) {
         $numLivros = $LivrosQuery->CountLivros("all", "");
         $pages = (int)($numLivros / $ELEMPAGES) + 1;
         $livros =  $LivrosQuery->GetLivrosPage($ELEMPAGES, 0);
@@ -72,7 +72,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         $numLivros = $LivrosQuery->CountLivros($filter, $search);
         $pages = (int)($numLivros / $ELEMPAGES) + 1;
         $livros = $LivrosQuery->GetLivrosPageFilter($ELEMPAGES, 0, $filter, $search);
-    } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["filter"])) { // se existir o page e o filtro
+    } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se existir o page e o filtro
         $page = $_GET["page"];
         $filter = $_GET["filter"];
         $search = $_GET["search"];
@@ -98,26 +98,40 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        Livros
+                        Livros 
                     </div>
                     <div class="card-body">
                         <form action="." method="get">
                             <ul class="list-group list-group-horizontal">
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" checked>
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" <?php
+                                    $name = $_GET["filter"] == "nome" ? "checked" : "";
+                                    echo $name;
+                                    ?>>
                                     <label class="form-check-label" for="checkName">Nome</label>
                                 </li>
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="genero" id="checkCpf">
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="genero" id="checkCpf" <?php
+                                    $genero = $_GET["filter"] == "genero" ? "checked" : "";
+                                    echo $genero;
+                                    ?>>
                                     <label class="form-check-label" for="checkCpf">genero</label>
                                 </li>
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="autor" id="checkCurso">
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="autor" id="checkCurso" <?php
+                                    $autor = $_GET["filter"] == "autor" ? "checked" : "";
+                                    echo $autor;
+                                    ?>>
                                     <label class="form-check-label" for="checkCurso">autor</label>
                                 </li>
                             </ul>
                             <div class="input-group">
-                                <input class="form-control border border-primary" type="search" name="search" id="search_livro" placeholder="Buscar livro por nome">
+                                <?php
+                                $s = isset($_GET["search"]) ? $_GET["search"] : "";
+                                $f = isset($_GET["filter"]) ? $_GET["filter"] : "nome";
+                                $input = "<input class='form-control border border-primary' value='$s' type='search' name='search' id='search_livro' placeholder='Buscar livro por $f'>";
+                                echo $input;
+                                ?>
                                 <button class="btn btn-outline-secondary" type="submit" id="btn-buscar">
                                     buscar
                                 </button>
@@ -127,7 +141,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="card mt-2">
                                     <div class="card-header">
-                                        alunos cadastrados
+                                        livros cadastrados
                                     </div>
                                     <div class="card-body">
                                         <table class="table">
@@ -172,8 +186,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                     </li>";
                                             } else {
                                                 $previous_page = $current_page - 1;
+                                                $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                $in_search = isset($search) ? "search=$search&": "";
+                                                $params = $in_filter.$in_search."page=$previous_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/livros/?page=$previous_page' class='page-link'>Previous</a>
+                                                        <a href='/painel/livros/?$params' class='page-link'>Previous</a>
                                                     </li>";
                                             }
 
@@ -183,8 +200,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                             <a class='page-link'>$i</a>
                                                         </li>";
                                                 } else {
+                                                    $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                    $in_search = isset($search) ? "search=$search&": "";
+                                                    $params = $in_filter.$in_search."page=$i";
                                                     echo "<li class='page-item'>
-                                                            <a href='/painel/livros/?page=$i' class='page-link'>$i</a>
+                                                            <a href='/painel/livros/?$params' class='page-link'>$i</a>
                                                         </li>";
                                                 }
                                             }
@@ -195,8 +215,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                     </li>";
                                             } else {
                                                 $next_page = $current_page + 1;
+                                                $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                $in_search = isset($search) ? "search=$search&": "";
+                                                $params = $in_filter.$in_search."page=$next_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/livros/?page=$next_page' class='page-link'>Next</a>
+                                                        <a href='/painel/livros/?$params' class='page-link'>Next</a>
                                                     </li>";
                                             }
 
