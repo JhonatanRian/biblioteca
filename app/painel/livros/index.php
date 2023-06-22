@@ -105,22 +105,22 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                             <ul class="list-group list-group-horizontal">
                                 <li class="list-group-item">
                                     <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" <?php
-                                    $name = $_GET["filter"] == "nome" ? "checked" : "";
-                                    echo $name;
+                                    $check = $_GET["filter"] == "nome" ? "checked" : "";
+                                    echo $check;
                                     ?>>
                                     <label class="form-check-label" for="checkName">Nome</label>
                                 </li>
                                 <li class="list-group-item">
                                     <input class="form-check-input me-1" type="radio" name="filter" value="genero" id="checkCpf" <?php
-                                    $genero = $_GET["filter"] == "genero" ? "checked" : "";
-                                    echo $genero;
+                                    $check = $_GET["filter"] == "genero" ? "checked" : "";
+                                    echo $check;
                                     ?>>
                                     <label class="form-check-label" for="checkCpf">genero</label>
                                 </li>
                                 <li class="list-group-item">
                                     <input class="form-check-input me-1" type="radio" name="filter" value="autor" id="checkCurso" <?php
-                                    $autor = $_GET["filter"] == "autor" ? "checked" : "";
-                                    echo $autor;
+                                    $check = $_GET["filter"] == "autor" ? "checked" : "";
+                                    echo $check;
                                     ?>>
                                     <label class="form-check-label" for="checkCurso">autor</label>
                                 </li>
