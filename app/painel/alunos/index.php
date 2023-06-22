@@ -67,14 +67,14 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     ?>
     <?php
     // Se não existir os parametros page, filter e search
-    if (!isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["search"])) {
+    if ((!isset($_GET["filter"]) && !isset($_GET["search"])) && !isset($_GET["page"])) {
         $numAlunos = $AlunosQuery->CountAlunos("all", "");
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $alunos =  $AlunosQuery->GetAlunosPage($ELEMPAGES, 0);
     } else if (!isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se não existir o page, mas existir o filter e search 
         $filter = $_GET["filter"];
         $search = $_GET["search"];
-        $numAlunos = $AlunosQuery->CountAlunos($filter, $search);
+        $numAlunos = $AlunosQuery->CountAlunos($filter, $search); ;
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, 0, $filter, $search);
     } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se existir o page e o filtro
@@ -85,7 +85,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
         $offset = ($page - 1) * $ELEMPAGES;
         $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, $offset, $filter, $search);
-    } elseif (isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["search"])) { // se exitir somente o page
+    } elseif (isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["filter"])) { // se exitir somente o page
         $numAlunos = $AlunosQuery->CountAlunos("all", "");
         $page = $_GET["page"];
         $pages = (int)($numAlunos / $ELEMPAGES) + 1;
@@ -110,24 +110,41 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                         <form action="." method="get">
                             <ul class="list-group list-group-horizontal">
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" checked>
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" <?php
+                                    $check = $_GET["filter"] == "nome" ? "checked" : "";
+                                    echo $check;
+                                    ?>>
                                     <label class="form-check-label" for="checkName">Nome</label>
                                 </li>
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="cpf" id="checkCpf">
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="cpf" id="checkCpf" <?php
+                                    $check = $_GET["filter"] == "cpf" ? "checked" : "";
+                                    echo $check;
+                                    ?>>
                                     <label class="form-check-label" for="checkCpf">cpf</label>
                                 </li>
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="curso" id="checkCurso">
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="curso" id="checkCurso" <?php
+                                    $check = $_GET["filter"] == "curso" ? "checked" : "";
+                                    echo $check;
+                                    ?>>
                                     <label class="form-check-label" for="checkCurso">curso</label>
                                 </li>
                                 <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="turma" id="checkTurma">
+                                    <input class="form-check-input me-1" type="radio" name="filter" value="turma" id="checkTurma" <?php
+                                    $check = $_GET["filter"] == "turma" ? "checked" : "";
+                                    echo $check;
+                                    ?>>
                                     <label class="form-check-label" for="checkTurma">turma</label>
                                 </li>
                             </ul>
                             <div class="input-group">
-                                <input class="form-control border border-primary" type="search" name="search" id="search_aluno" placeholder="Buscar aluno por nome">
+                                <?php
+                                $s = isset($_GET["search"]) ? $_GET["search"] : "";
+                                $f = isset($_GET["filter"]) ? $_GET["filter"] : "nome";
+                                $input = "<input class='form-control border border-primary' value='$s' type='search' name='search' id='search_livro' placeholder='Buscar livro por $f'>";
+                                echo $input;
+                                ?>
                                 <button class="btn btn-outline-secondary" type="submit" id="btn-buscar">
                                     buscar
                                 </button>
@@ -182,8 +199,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                     </li>";
                                             } else {
                                                 $previous_page = $current_page - 1;
+                                                $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                $in_search = isset($search) ? "search=$search&": "";
+                                                $params = $in_filter.$in_search."page=$previous_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/alunos/?page=$previous_page' class='page-link'>Previous</a>
+                                                        <a href='/painel/alunos/?$params' class='page-link'>Previous</a>
                                                     </li>";
                                             }
 
@@ -193,8 +213,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                             <a class='page-link'>$i</a>
                                                         </li>";
                                                 } else {
+                                                    $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                    $in_search = isset($search) ? "search=$search&": "";
+                                                    $params = $in_filter.$in_search."page=$i";
                                                     echo "<li class='page-item'>
-                                                            <a href='/painel/alunos/?page=$i' class='page-link'>$i</a>
+                                                            <a href='/painel/alunos/?$params' class='page-link'>$i</a>
                                                         </li>";
                                                 }
                                             }
@@ -205,8 +228,11 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
                                                     </li>";
                                             } else {
                                                 $next_page = $current_page + 1;
+                                                $in_filter = isset($filter) ? "filter=$filter&" : "";
+                                                $in_search = isset($search) ? "search=$search&": "";
+                                                $params = $in_filter.$in_search."page=$next_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/alunos/?page=$next_page' class='page-link'>Next</a>
+                                                        <a href='/painel/alunos/?$params' class='page-link'>Next</a>
                                                     </li>";
                                             }
 

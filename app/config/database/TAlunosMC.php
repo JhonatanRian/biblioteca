@@ -158,7 +158,7 @@ class Alunos
 			} else if ($campoEsp == "turma") {
 				$sqlConsAux = "SELECT COUNT(*) AS qtde 
                            FROM TALUNOS 
-                           WHERE UPPER(TURMA) = UPPER('$value')";
+                           WHERE UPPER(TURMA) LIKE UPPER('%$value%')";
 			} else if ($campoEsp == "all") {
 				$sqlConsAux = "SELECT COUNT(*) AS qtde 
                            FROM TALUNOS";
