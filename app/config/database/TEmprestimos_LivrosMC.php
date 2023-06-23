@@ -192,6 +192,9 @@ class Emprestimos
 				return $resp;
 			} else {
 				$error = $this->connection->error;
+				if (strpos($error, "FOREIGN KEY")){
+					return array(false, "Não é possivel deletar esse emprestimo pois algum registro está relacionado a ele.");
+				}
 				$resp = array(false, "Não foi possível deletar. Erro: " . $error);
 				return $resp;
 			}
