@@ -15,7 +15,7 @@ $user = $query_user[0];
 if (!$user["is_superuser"] and !$user["is_staff"]) {
     echo "Você não tem permissão para acessar essa pagina";
     exit;
-} elseif ($user["is_staff"] == 0 and $user["is_superuser"] == 0) {
+} elseif ($user["is_superuser"] == 0) {
     echo "Você não tem permissão para acessar essa pagina";
     exit;
 }
@@ -26,7 +26,7 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alunos</title>
+    <title>Operarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 
@@ -37,13 +37,11 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
     } else {
         include "/app/painel/header-op.php";
     }
-    global $camposObrigatoriosAluno;
+    global $camposObrigatoriosOp;
     $camposObrigatoriosAluno = array(
         "nome",
+        "senha",
         "cpf",
-        "contato",
-        "curso",
-        "turma",
     );
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -53,51 +51,56 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                 break;
             }
         }
-        if (isset($_POST["ex-aluno"])) {
-            $exAluno = 1; // TRUE
+        if (isset($_POST["is_staff"])) {
+            $staff = 1; // TRUE
         } else {
-            $exAluno = 0; // FALSE
+            $staff = 0; // FALSE
         }
-        if (isset($_POST["cad-ativo"])) {
-            $cad = 1;
+        if (isset($_POST["is_superuser"])) {
+            $superuser = 1;
         } else {
-            $cad = 0;
+            $superuser = 0;
         }
+
+        if ($staff == 0 and $superuser == 0) {
+            $resp = array(false, "O usuario precisa ser dá equipe ou admin");
+        }
+
         if (!isset($resp)) {
-            $resp = $AlunosQuery->InsertEhUpdateAlunos("", $_POST["nome"], $_POST["cpf"], $exAluno, $_POST["curso"], $_POST["turma"], $_POST["contato"], $cad);
+            $resp = $BibliotecaMCQuery->InsertEhUpdateOperadores("", $_POST["nome"], $_POST["cpf"], $_POST["senha"], $staff, $superuser);
         }
     }
     ?>
     <?php
     // Se não existir os parametros page, filter e search
     if ((!isset($_GET["filter"]) && !isset($_GET["search"])) && !isset($_GET["page"])) {
-        $numAlunos = $AlunosQuery->CountAlunos("all", "");
-        $pages = (int)($numAlunos / $ELEMPAGES) + 1;
-        $alunos =  $AlunosQuery->GetAlunosPage($ELEMPAGES, 0);
+        $numOperarios = $BibliotecaMCQuery->CountOp("all", "");
+        $pages = (int)($numOperarios / $ELEMPAGES) + 1;
+        $operarios =  $BibliotecaMCQuery->GetOpPage($ELEMPAGES, 0);
     } else if (!isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se não existir o page, mas existir o filter e search 
         $filter = $_GET["filter"];
         $search = $_GET["search"];
-        $numAlunos = $AlunosQuery->CountAlunos($filter, $search); ;
-        $pages = (int)($numAlunos / $ELEMPAGES) + 1;
-        $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, 0, $filter, $search);
+        $numOperarios = $BibliotecaMCQuery->CountOp($filter, $search);
+        $pages = (int)($numOperarios / $ELEMPAGES) + 1;
+        $operarios = $BibliotecaMCQuery->GetOpPageFilter($ELEMPAGES, 0, $filter, $search);
     } else if (isset($_GET["page"]) && isset($_GET["filter"]) && isset($_GET["search"])) { // se existir o page e o filtro
         $page = $_GET["page"];
         $filter = $_GET["filter"];
         $search = $_GET["search"];
-        $numAlunos = $AlunosQuery->CountAlunos($filter, $search);
-        $pages = (int)($numAlunos / $ELEMPAGES) + 1;
+        $numOperarios = $BibliotecaMCQuery->CountOp($filter, $search);
+        $pages = (int)($numOperarios / $ELEMPAGES) + 1;
         $offset = ($page - 1) * $ELEMPAGES;
-        $alunos = $AlunosQuery->GetAlunosPageFilter($ELEMPAGES, $offset, $filter, $search);
+        $operarios = $BibliotecaMCQuery->GetOpPageFilter($ELEMPAGES, $offset, $filter, $search);
     } elseif (isset($_GET["page"]) && !isset($_GET["filter"]) && !isset($_GET["filter"])) { // se exitir somente o page
-        $numAlunos = $AlunosQuery->CountAlunos("all", "");
+        $numOperarios = $BibliotecaMCQuery->CountOp("all", "");
         $page = $_GET["page"];
-        $pages = (int)($numAlunos / $ELEMPAGES) + 1;
+        $pages = (int)($numOperarios / $ELEMPAGES) + 1;
         $offset = ($page - 1) * $ELEMPAGES;
-        $alunos = $AlunosQuery->GetAlunosPage($ELEMPAGES, $offset);
+        $operarios = $BibliotecaMCQuery->GetOpPage($ELEMPAGES, $offset);
     } else {
-        $numAlunos = $AlunosQuery->CountAlunos("all", "");
-        $pages = (int)($numAlunos / $ELEMPAGES) + 1;
-        $alunos =  $AlunosQuery->GetAlunosPage($ELEMPAGES, 0);
+        $numOperarios = $BibliotecaMCQuery->CountOp("all", "");
+        $pages = (int)($numOperarios / $ELEMPAGES) + 1;
+        $operarios =  $BibliotecaMCQuery->GetOpPage($ELEMPAGES, 0);
     }
 
     ?>
@@ -107,45 +110,36 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        Alunos
+                        Operarios <?php
+                        $BibliotecaMCQuery->GetOpPageFilter($ELEMPAGES, $offset, $filter, $search);
+                        ?>
                     </div>
                     <div class="card-body">
                         <form action="." method="get">
                             <ul class="list-group list-group-horizontal">
                                 <li class="list-group-item">
                                     <input class="form-check-input me-1" type="radio" name="filter" value="nome" id="checkName" <?php
-                                    $check = $_GET["filter"] == "nome" ? "checked" : "";
-                                    echo $check;
-                                    ?>>
+                                                                                                                                $check = $_GET["filter"] == "nome" ? "checked" : "";
+                                                                                                                                if (strlen($check) == 0 && !isset($_POST["cpf"])) {
+                                                                                                                                    $check = "checked";
+                                                                                                                                }
+                                                                                                                                echo $check;
+                                                                                                                                ?>>
                                     <label class="form-check-label" for="checkName">Nome</label>
                                 </li>
                                 <li class="list-group-item">
                                     <input class="form-check-input me-1" type="radio" name="filter" value="cpf" id="checkCpf" <?php
-                                    $check = $_GET["filter"] == "cpf" ? "checked" : "";
-                                    echo $check;
-                                    ?>>
+                                                                                                                                $check = $_GET["filter"] == "cpf" ? "checked" : "";
+                                                                                                                                echo $check;
+                                                                                                                                ?>>
                                     <label class="form-check-label" for="checkCpf">cpf</label>
-                                </li>
-                                <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="curso" id="checkCurso" <?php
-                                    $check = $_GET["filter"] == "curso" ? "checked" : "";
-                                    echo $check;
-                                    ?>>
-                                    <label class="form-check-label" for="checkCurso">curso</label>
-                                </li>
-                                <li class="list-group-item">
-                                    <input class="form-check-input me-1" type="radio" name="filter" value="turma" id="checkTurma" <?php
-                                    $check = $_GET["filter"] == "turma" ? "checked" : "";
-                                    echo $check;
-                                    ?>>
-                                    <label class="form-check-label" for="checkTurma">turma</label>
                                 </li>
                             </ul>
                             <div class="input-group">
                                 <?php
                                 $s = isset($_GET["search"]) ? $_GET["search"] : "";
                                 $f = isset($_GET["filter"]) ? $_GET["filter"] : "nome";
-                                $input = "<input class='form-control border border-primary' value='$s' type='search' name='search' id='search_livro' placeholder='Buscar livro por $f'>";
+                                $input = "<input class='form-control border border-primary' value='$s' type='search' name='search' id='search_op' placeholder='Buscar operario por $f'>";
                                 echo $input;
                                 ?>
                                 <button class="btn btn-outline-secondary" type="submit" id="btn-buscar">
@@ -157,7 +151,7 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="card mt-2">
                                     <div class="card-header">
-                                        alunos cadastrados
+                                        Operarios cadastrados
                                     </div>
                                     <div class="card-body">
                                         <table class="table">
@@ -165,24 +159,46 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                                                 <tr>
                                                     <th scope="col">nome</th>
                                                     <th scope="col">cpf</th>
-                                                    <th scope="col">turma</th>
+                                                    <th scope="col">equipe</th>
+                                                    <th scope="col">admin</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                foreach ($alunos as $aluno) {
-                                                    $id_aluno = $aluno["idaluno"];
+                                                foreach ($operarios as $op) {
+                                                    $id_op = $op["idoperador"];
                                                     echo "<tr>";
                                                     echo "<td>";
-                                                    echo "<a class='text-decoration-none' href='/painel/alunos/aluno?id_aluno=$id_aluno'>";
-                                                    echo $aluno["nomealuno"];
+                                                    echo "<a class='text-decoration-none' href='/painel/operarios/operario?id_op=$id_op'>";
+                                                    echo $op["nomeoperador"];
                                                     echo "</a>";
                                                     echo "</td>";
                                                     echo "<td>";
-                                                    echo $aluno["cpfaluno"];
+                                                    echo $op["cpf"];
                                                     echo "</td>";
                                                     echo "<td>";
-                                                    echo $aluno["turma"];
+                                                    $check = $op["is_staff"] ? "
+                                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-check-circle-fill' viewBox='0 0 16 16'>
+                                                        <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z'/>
+                                                    </svg>
+                                                    " : "
+                                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-circle-fill' viewBox='0 0 16 16'>
+                                                        <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z'/>
+                                                    </svg>
+                                                    ";
+                                                    echo $check;
+                                                    echo "</td>";
+                                                    echo "<td>";
+                                                    $check = $op["is_superuser"] ? "
+                                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-check-circle-fill' viewBox='0 0 16 16'>
+                                                        <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z'/>
+                                                    </svg>
+                                                    " : "
+                                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-circle-fill' viewBox='0 0 16 16'>
+                                                        <path d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z'/>
+                                                    </svg>
+                                                    ";
+                                                    echo $check;
                                                     echo "</td>";
                                                     echo "</tr>";
                                                 }
@@ -203,10 +219,10 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                                             } else {
                                                 $previous_page = $current_page - 1;
                                                 $in_filter = isset($filter) ? "filter=$filter&" : "";
-                                                $in_search = isset($search) ? "search=$search&": "";
-                                                $params = $in_filter.$in_search."page=$previous_page";
+                                                $in_search = isset($search) ? "search=$search&" : "";
+                                                $params = $in_filter . $in_search . "page=$previous_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/alunos/?$params' class='page-link'>Previous</a>
+                                                        <a href='/painel/livros/?$params' class='page-link'>Previous</a>
                                                     </li>";
                                             }
 
@@ -217,10 +233,10 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                                                         </li>";
                                                 } else {
                                                     $in_filter = isset($filter) ? "filter=$filter&" : "";
-                                                    $in_search = isset($search) ? "search=$search&": "";
-                                                    $params = $in_filter.$in_search."page=$i";
+                                                    $in_search = isset($search) ? "search=$search&" : "";
+                                                    $params = $in_filter . $in_search . "page=$i";
                                                     echo "<li class='page-item'>
-                                                            <a href='/painel/alunos/?$params' class='page-link'>$i</a>
+                                                            <a href='/painel/livros/?$params' class='page-link'>$i</a>
                                                         </li>";
                                                 }
                                             }
@@ -232,10 +248,10 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                                             } else {
                                                 $next_page = $current_page + 1;
                                                 $in_filter = isset($filter) ? "filter=$filter&" : "";
-                                                $in_search = isset($search) ? "search=$search&": "";
-                                                $params = $in_filter.$in_search."page=$next_page";
+                                                $in_search = isset($search) ? "search=$search&" : "";
+                                                $params = $in_filter . $in_search . "page=$next_page";
                                                 echo "<li class='page-item'>
-                                                        <a href='/painel/alunos/?$params' class='page-link'>Next</a>
+                                                        <a href='/painel/livros/?$params' class='page-link'>Next</a>
                                                     </li>";
                                             }
 
@@ -249,7 +265,7 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                             <div class="col-sm-12 col-md-6 col-lg-6">
                                 <div class="card mt-2">
                                     <div class="card-header">
-                                        criar aluno
+                                        criar operario
                                     </div>
                                     <div class="card-body">
                                         <form class="row g-3" action="./" method="post">
@@ -262,24 +278,16 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
                                                 <input placeholder="999.999.999-99" class="form-control" id="cpf" type="text" name="cpf">
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <label class="form-label" for="contato">contato</label>
-                                                <input placeholder="+55 (99) 99999-9999" class="form-control" id="contato" type="tel" name="contato">
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <label class="form-label" for="curso">curso</label>
-                                                <input placeholder="Nome do curso" class="form-control" id="curso" type="text" name="curso">
-                                            </div>
-                                            <div class="col-sm-12 col-md-12 col-lg-12">
-                                                <label class="form-label" for="turma">turma</label>
-                                                <input placeholder="Turma" class="form-control" id="turma" type="text" name="turma">
+                                                <label class="form-label" for="curso">senha</label>
+                                                <input placeholder="senha" class="form-control" id="senha" type="password" name="senha">
                                             </div>
                                             <div class="col-sm-12 col-md-6 col-lg-6">
-                                                <input type="checkbox" class="form-check-input" name="ex-aluno" id="ex-aluno">
-                                                <label class="form-check-label" for="ex-aluno">ex-aluno</label>
+                                                <input type="checkbox" class="form-check-input" name="is_staff" id="is_staff">
+                                                <label class="form-check-label" for="is_staff">é da equipe?</label>
                                             </div>
                                             <div class="col-sm-12 col-md-6 col-lg-6">
-                                                <input type="checkbox" class="form-check-input" name="cad-ativo" id="cad-ativo">
-                                                <label class="form-check-label" for="cad-ativo">cadastro ativo?</label>
+                                                <input type="checkbox" class="form-check-input" name="is_superuser" id="is_superuser">
+                                                <label class="form-check-label" for="is_admin">é admin?</label>
                                             </div>
                                             <div class="col-sm-12 col-md-12 col-lg-12 text-center">
                                                 <button class="btn btn-success" type="submit">Cadastrar</button>
@@ -334,8 +342,8 @@ if (!$user["is_superuser"] and !$user["is_staff"]) {
         });
         const inputsCheck = document.querySelectorAll("body > main > div > div > div > div.card-body > form > ul input");
         const LabelsCheck = document.querySelectorAll("body > main > div > div > div > div.card-body > form > ul label");
-        const inputSearch = document.querySelector("#search_aluno");
-
+        const inputSearch = document.querySelector("#search_op");
+        console.log(inputSearch)
         Array.from(inputsCheck).forEach((elem, index) => {
             elem.addEventListener("change", (event) => {
                 let label = LabelsCheck[index];

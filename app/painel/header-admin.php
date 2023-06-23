@@ -46,7 +46,7 @@
                     Alugueis
                 </button>
             </a>
-            <a class="py-2 d-none d-md-inline-block me-1" href="painel/operarios/">
+            <a class="py-2 d-none d-md-inline-block me-1" href="/painel/operarios/">
                 <button class="btn btn-secondary">
                     Operarios
                 </button>

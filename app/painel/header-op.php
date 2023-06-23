@@ -1,6 +1,6 @@
 <header class="site-header sticky-top py-1 text-bg-dark navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
-        <a class="py-2 float-left d-flex align-items-center mb-3 navbar-brand link-body-emphasis text-decoration-none" href="./" aria-label="Product">
+        <a class="py-2 float-left d-flex align-items-center mb-3 navbar-brand link-body-emphasis text-decoration-none" href="/painel/" aria-label="Product">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" viewBox="0 0 460 460" xml:space="preserve" width="44" height="44" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mx-auto" role="img" viewBox="0 0 24 24">
                 <title>
                     Biblioteca
@@ -21,19 +21,24 @@
         </a>
         <nav class="d-flex flex-column flex-md-row justify-content-center">
 
-            <a class="py-2 d-none d-md-inline-block me-1" href="./livros/">
+            <a class="py-2 d-none d-md-inline-block me-1" href="/painel/livros/">
                 <button class="btn btn-secondary active">
                     Livros
                 </button>
             </a>
-            <a class="py-2 d-none d-md-inline-block me-1" href="./generos/">
+            <a class="py-2 d-none d-md-inline-block me-1" href="/painel/generos/">
                 <button class="btn btn-secondary">
                     Generos
                 </button>
             </a>
-            <a class="py-2 d-none d-md-inline-block me-1" href="./alunos/">
+            <a class="py-2 d-none d-md-inline-block me-1" href="/painel/alunos/">
                 <button class="btn btn-secondary">
                     Aluno
+                </button>
+            </a>
+            <a class="py-2 d-none d-md-inline-block me-1" href="/painel/alugar/">
+                <button class="btn btn-secondary">
+                    Alugueis
                 </button>
             </a>
             <a class="py-2 d-none d-md-inline-block me-1" href="/logout/">

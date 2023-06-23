@@ -12,7 +12,10 @@ $id_user = $_SESSION["id"];
 $query_user = $BibliotecaMCQuery->GetInfoOperadores((int)$id_user, 0);
 $user = $query_user[0];
 
-if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] and $user["is_staff"])) {
+if (!$user["is_superuser"] and !$user["is_staff"]) {
+    echo "Você não tem permissão para acessar essa pagina";
+    exit;
+} elseif ($user["is_staff"] == 0 and $user["is_superuser"] == 0) {
     echo "Você não tem permissão para acessar essa pagina";
     exit;
 }
@@ -23,7 +26,7 @@ if (!($user["is_superuser"] and $user["is_staff"]) and !(!$user["is_superuser"] 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genero</title>
+    <title>Livro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/book.css">
 </head>
