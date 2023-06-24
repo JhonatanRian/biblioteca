@@ -203,4 +203,14 @@ class Emprestimos
 			return $resp;
 		}
 	}
+
+	public function NumeroEmprestimos($id) {
+		$sql = "SELECT COUNT(ORDEMEMPRESTIMOS) AS qtde FROM TEMPRESTIMOS_LIVROS WHERE IDLIVRO = $id;";
+		$resultadoSqlAux = $this->connection->query($sql);
+		if ($resultadoSqlAux !== false && $resultadoSqlAux->num_rows > 0) {
+			return $resultadoSqlAux->num_rows;
+		} else {
+			return 0;
+		}
+	}
 }

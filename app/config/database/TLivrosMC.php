@@ -94,6 +94,30 @@ class Livros {
 		}
     }
 	
+	function GetLivrosNovos() {
+		$sql = "SELECT * FROM TLIVROS ORDER BY IDLIVRO DESC LIMIT 30;";
+		$resultadoSqlCons = $this->connection->query($sql);
+		if ($resultadoSqlCons !== false && $resultadoSqlCons->num_rows > 0) {
+			while($row = $resultadoSqlCons->fetch_assoc()){	
+				$retornoConsulta[] = array(
+					"idlivro"       => $row["IDLIVRO"],
+					"nomelivro"     => $row["NOMELIVRO"],
+					"nomeautor"     => $row["NOMEAUTOR"],
+					"corcapa"     => $row["CORCAPA"],
+					"fonte"     => $row["FONTE"],
+					"qtde"          => $row["QTDE"],
+					"genero"        => $row["GENERO"],
+					"sinopse"       => $row["SINOPSE"],
+					"cadastroativo" => $row["CADASTROATIVO"]
+					
+				);
+			}
+			return $retornoConsulta;
+		} else {
+			return array();
+		}
+	}
+
 	public function InsertEhUpdateLivros($prIdLivro, $prNomeLivro, $prNomeAutor, $prGenero, $prQtde, $prSinopse, $prCadastroAtivo, $corcapa = "book-brown", $fonte = "book-text-rajd") {
 
 		if (isInteger($prIdLivro)) {

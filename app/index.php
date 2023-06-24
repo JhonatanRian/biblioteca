@@ -1,5 +1,5 @@
 <?php
-include "../app/config/authenticate.php";
+require_once '/app/config/config.php';
 ?>
 
 <!doctype html>
@@ -37,7 +37,7 @@ include "../app/config/authenticate.php";
                     </g>
                 </svg>
             </a>
-            <a class="py-2 d-none d-md-inline-block" href="./login/">
+            <a class="py-2 d-none d-md-inline-block" href="/painel/">
                 <button class="btn btn-secondary">
                     Entrar
                 </button>
@@ -55,7 +55,7 @@ include "../app/config/authenticate.php";
                 <div class="col-sm-12 col-md-12 col-lg-12 m-auto text-center">
                     <div class="title rounded m-2">
                         <h5 class="text-bg-secundary">
-                            Livros novos
+                            Livros adicionados recentemente
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-journal-plus" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z" />
                                 <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
@@ -65,272 +65,51 @@ include "../app/config/authenticate.php";
                     </div>
                     <article class="c-carousel c-carousel--simple w-100">
                         <div class="c-carousel__slides js-carousel--simple">
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                            <?php
+                            $livros_novos = $LivrosQuery->GetLivrosNovos();
+                            foreach ($livros_novos as $livro) {
+                                echo "<article class='c-carousel__slide'>";
+                                echo "<div class='col'>";
+                                echo "<div class='card shadow-sm p-2 bg-light'>";
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                                $classBook = $livro["corcapa"];
+                                $fonte = $livro["fonte"];
+                                echo "<div class='book $classBook $fonte m-auto'>";
+                                echo "<div class='d-flex p-1 align-items-center justify-content-center h-50'>";
+                                echo "<span class='text-center'>";
+                                echo $livro["nomelivro"];
+                                echo "</span>";
+                                echo "</div>";
+                                echo "<div class='h-50 position-relative'>";
+                                echo "<div class='position-absolute bottom-0 end-0 mb-2 me-2 subtitle'>";
+                                echo $livro["nomeautor"];
+                                echo "</div>";
+                                echo "</div>";
+                                echo "</div>";
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                                echo "<div class='card-body'>";
+                                $sinopse = $livro["sinopse"];
+                                echo "<p class='card-text'>$sinopse</p>";
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                                echo "<div class='d-flex justify-content-between align-items-center' >";
+                                echo "<div class='btn-group' >";
+                                echo "</div >";
+                                $numEmp = $EmprestimosLivrosQuery->NumeroEmprestimos($livro["idlivro"]);
+                                if ($numEmp >= $livro["qtde"]) {
+                                    echo "<small class='text-muted'>Indisponivel</small>";
+                                } else {
+                                    echo "<small class='text-muted'>Disponivel</small>";
+                                }
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                                echo "</div>";
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
+                                echo "</div>";
 
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Disponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="c-carousel__slide">
-                                <div class="col">
-                                    <div class="card shadow-sm p-2 bg-light">
-                                        <div class="book book-brown book-text-rajd m-auto">
-                                            <span>titulo book</span>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">acessar</button>
-                                                </div>
-                                                <small class="text-muted">Indiponivel</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                                echo "</div>";
+                                echo "</div>";
+                                echo "</article>";
+                            }
+                            ?>
                         </div>
                         <br>
                         <button id="prev" class="js-carousel--simple-prev btn btn-success">«</button>
@@ -338,7 +117,7 @@ include "../app/config/authenticate.php";
                         <div class="js-carousel--simple-dots"></div>
                     </article>
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-12 m-auto text-center">
+                <!-- <div class="col-sm-12 col-md-12 col-lg-12 m-auto text-center">
                     <div class="title rounded m-2">
                         <h5 class="text-bg-secundary">
                             Mais alugados
@@ -451,7 +230,7 @@ include "../app/config/authenticate.php";
                         <button id="next" class="js-carousel--simple-next btn btn-success">»</button>
                         <div class="js-carousel--simple-dots"></div>
                     </article>
-                </div>
+                </div> -->
             </div>
         </div>
     </main>

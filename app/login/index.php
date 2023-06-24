@@ -26,7 +26,9 @@ if (isset($_SESSION) and isset($_SESSION["id"])) {
     <main class="row form-signin w-100 m-auto">
 
         <form class="col-sm-12 col-md-4 col-lg-4 m-auto text-center" action="" method="POST">
-            <img class="mb-4" src="../static/img/pilha-de-livros.png" alt="" width="72" height="57">
+            <a href="/">
+                <img class="mb-4" src="../static/img/pilha-de-livros.png" alt="" width="72" height="57">
+            </a>
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
             <div class="form-floating">
